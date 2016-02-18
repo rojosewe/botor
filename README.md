@@ -10,5 +10,11 @@ A thin wrapper around boto3
 ## Example
 
     from bobo.aws.sqs import get_queue, get_messages
-    queue = get_queue(queue_name='MyQueue', account_number='111111111111', assume_role='MyRole', region='us-east-1')
+    conn_details = {
+        'account_number': '111111111111',
+        'assume_role': 'MyRole',
+        'session_name': 'MySession',
+        'region': 'us-east-1'
+    }
+    queue = get_queue(queue_name='MyQueue', **conn_details)
     messages = get_messages(queue=queue)
