@@ -9,6 +9,8 @@
 from functools import wraps
 import boto3
 
+from bobo.decorators import rate_limited
+
 
 def _client(service, region, role):
     return boto3.client(
@@ -30,6 +32,7 @@ def _resource(service, region, role):
     )
 
 
+@rate_limited()
 def sts_conn(service, service_type='client'):
     def decorator(f):
         @wraps(f)

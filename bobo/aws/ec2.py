@@ -8,9 +8,11 @@
 """
 from bobo.aws.sts import sts_conn
 from bobo.exceptions import BoboException
+from bobo.decorators import rate_limited
 
 
 @sts_conn('ec2')
+@rate_limited()
 def create_group(group, account_number=None, region=None, assume_role=None, client=None):
     if group.vpc_id:
         group_id = client.create_security_group(
@@ -36,6 +38,7 @@ def create_group(group, account_number=None, region=None, assume_role=None, clie
 
 
 @sts_conn('ec2')
+@rate_limited()
 def delete_group(group, account_number=None, region=None, assume_role=None, client=None):
     client.delete_security_group(
             GroupId=group.aws_group_id
@@ -43,6 +46,7 @@ def delete_group(group, account_number=None, region=None, assume_role=None, clie
 
 
 @sts_conn('ec2')
+@rate_limited()
 def authorize_rule(rule, group, account_number=None, region=None, assume_role=None, client=None):
     if rule.direction == 'egress':
         # response = client.authorize_security_group_egress()
@@ -68,6 +72,7 @@ def authorize_rule(rule, group, account_number=None, region=None, assume_role=No
 
 
 @sts_conn('ec2')
+@rate_limited()
 def revoke_rule(rule, group, account_number=None, region=None, assume_role=None, client=None):
     if rule.direction == 'egress':
         # response = client.authorize_security_group_egress()
@@ -83,30 +88,36 @@ def revoke_rule(rule, group, account_number=None, region=None, assume_role=None,
 
 
 @sts_conn('ec2')
+@rate_limited()
 def add_groups_to_instance(instance_id, groups, account_number=None, region=None, assume_role=None, client=None):
     client.modify_instance_attribute(InstanceId=instance_id, Groups=groups)
 
 
+@rate_limited()
 @sts_conn('ec2')
 def describe_instances(**kwargs):
     return kwargs.pop('client').get_paginator('describe_instances').paginate()
 
 
 @sts_conn('ec2')
+@rate_limited()
 def describe_security_groups(**kwargs):
     return kwargs.pop('client').describe_security_groups(**kwargs)
 
 
 @sts_conn('ec2')
+@rate_limited()
 def create_security_group(**kwargs):
     return kwargs.pop('client').create_security_group(**kwargs)
 
 
 @sts_conn('ec2')
+@rate_limited()
 def authorize_security_group_ingress(**kwargs):
     return kwargs.pop('client').authorize_security_group_ingress(**kwargs)
 
 
 @sts_conn('ec2')
+@rate_limited()
 def authorize_security_group_egress(**kwargs):
     return kwargs.pop('client').authorize_security_group_egress(**kwargs)

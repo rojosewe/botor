@@ -8,12 +8,15 @@
 """
 
 from bobo.aws.sts import sts_conn
+from bobo.decorators import rate_limited
 
 
 @sts_conn('sqs', service_type='resource')
+@rate_limited()
 def get_queue(**kwargs):
     return kwargs.pop('resource').get_queue_by_name(QueueName=kwargs.pop('queue_name'))
 
 
+@rate_limited()
 def get_messages(**kwargs):
     return kwargs.pop('queue').receive_messages(**kwargs)
