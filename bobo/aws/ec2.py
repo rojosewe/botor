@@ -93,8 +93,8 @@ def add_groups_to_instance(instance_id, groups, account_number=None, region=None
     client.modify_instance_attribute(InstanceId=instance_id, Groups=groups)
 
 
-@rate_limited()
 @sts_conn('ec2')
+@rate_limited()
 def describe_instances(**kwargs):
     return kwargs.pop('client').get_paginator('describe_instances').paginate()
 
