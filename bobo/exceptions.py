@@ -9,4 +9,4 @@
 
 
 class BoboException(Exception):
-    ...
+    pass
