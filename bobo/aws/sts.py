@@ -8,8 +8,39 @@
 """
 from functools import wraps
 import boto3
+import dateutil.tz
+import datetime
 
 from bobo.decorators import rate_limited
+CACHE = {}
+
+
+def cached(future_expiration_minutes=15, service=None, service_type=None):
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            key = (
+                kwargs.get('account_number'),
+                kwargs.get('assume_role'),
+                kwargs.get('session_name'),
+                kwargs.get('region'),
+                service_type,
+                service
+            )
+
+            if key in CACHE:
+                (val, exp) = CACHE[key]
+                now = datetime.datetime.now(dateutil.tz.tzutc()) \
+                    + datetime.timedelta(minutes=future_expiration_minutes)
+                if exp > now:
+                    return val
+                del CACHE[key]
+
+            (retval, expiration) = f(*args, **kwargs)
+            CACHE[key] = (retval, expiration)
+            return retval
+        return decorated_function
+    return decorator
 
 
 def _client(service, region, role):
@@ -36,6 +67,7 @@ def _resource(service, region, role):
 def sts_conn(service, service_type='client'):
     def decorator(f):
         @wraps(f)
+        @cached(service=service, service_type=service_type)
         def decorated_function(*args, **kwargs):
             sts = boto3.client('sts')
             arn = 'arn:aws:iam::{0}:role/{1}'.format(
@@ -48,7 +80,7 @@ def sts_conn(service, service_type='client'):
                 kwargs[service_type] = _client(service, kwargs.pop('region'), role)
             elif service_type == 'resource':
                 kwargs[service_type] = _resource(service, kwargs.pop('region'), role)
-            return f(*args, **kwargs)
+            return f(*args, **kwargs), role['Credentials']['Expiration']
 
         return decorated_function
 
