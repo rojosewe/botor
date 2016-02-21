@@ -6,9 +6,9 @@
 .. moduleauthor:: Kevin Glisson <kglisson@netflix.com>
 .. moduleauthor:: Patrick Kelley <patrick@netflix.com>
 """
-from bobo.aws.sts import sts_conn
-from bobo.exceptions import BoboException
-from bobo.decorators import rate_limited
+from botor.aws.sts import sts_conn
+from botor.exceptions import BoboException
+from botor.decorators import rate_limited
 
 
 @sts_conn('ec2')

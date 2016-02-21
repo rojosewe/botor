@@ -1,4 +1,4 @@
-# bobo
+# botor
 A thin wrapper around boto3
 
 ## features
@@ -9,7 +9,7 @@ A thin wrapper around boto3
 
 ## Example
 
-    from bobo.aws.sqs import get_queue, get_messages
+    from botor.aws.sqs import get_queue, get_messages
     conn_details = {
         'account_number': '111111111111',
         'assume_role': 'MyRole',
