@@ -13,7 +13,7 @@ __title__ = 'botor'
 __summary__ = 'A thin wrapper around boto3'
 __uri__ = 'https://github.com/monkeysecurity/botor'
 
-__version__ = '0.0.1dev'
+__version__ = '0.0.1dev1'
 
 __author__ = 'Patrick Kelley'
 __email__ = 'patrick@netflix.com'
