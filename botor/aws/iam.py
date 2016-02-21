@@ -40,12 +40,12 @@ def get_role_inline_policy_names(role, client=None, **kwargs):
 
 
 def get_role_inline_policies(role, **kwargs):
-    policy_names = _get_role_inline_policy_names(role, **kwargs)
+    policy_names = get_role_inline_policy_names(role, **kwargs)
 
     policies = zip(
         policy_names,
         Parallel(n_jobs=20, backend="threading")(
-            delayed(_get_role_inline_policy_document)
+            delayed(get_role_inline_policy_document)
             (role, policy_name, **kwargs) for policy_name in policy_names
         )
     )
