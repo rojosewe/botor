@@ -5,7 +5,7 @@ from joblib import Parallel, delayed
 
 @sts_conn('iam')
 @rate_limited()
-def list_roles(self, **kwargs):
+def list_roles(**kwargs):
     client = kwargs['client']
     roles = []
     marker = {}
@@ -22,7 +22,7 @@ def list_roles(self, **kwargs):
 
 @rate_limited()
 @sts_conn('iam', service_type='client')
-def _get_role_inline_policy_names(role, client=None, **kwargs):
+def get_role_inline_policy_names(role, client=None, **kwargs):
     marker = {}
     inline_policies = []
 
@@ -39,7 +39,7 @@ def _get_role_inline_policy_names(role, client=None, **kwargs):
             return inline_policies
 
 
-def _get_role_inline_policies(role, **kwargs):
+def get_role_inline_policies(role, **kwargs):
     policy_names = _get_role_inline_policy_names(role, **kwargs)
 
     policies = zip(
@@ -56,7 +56,7 @@ def _get_role_inline_policies(role, **kwargs):
 
 @sts_conn('iam', service_type='client')
 @rate_limited()
-def _get_role_inline_policy_document(role, policy_name, client=None, **kwargs):
+def get_role_inline_policy_document(role, policy_name, client=None, **kwargs):
     response = client.get_role_policy(
         RoleName=role['RoleName'],
         PolicyName=policy_name
@@ -66,7 +66,7 @@ def _get_role_inline_policy_document(role, policy_name, client=None, **kwargs):
 
 @sts_conn('iam', service_type='client')
 @rate_limited()
-def _get_role_instance_profiles(role, client=None, **kwargs):
+def get_role_instance_profiles(role, client=None, **kwargs):
     marker = {}
     instance_profiles = []
 
@@ -95,7 +95,7 @@ def _get_role_instance_profiles(role, client=None, **kwargs):
 
 @sts_conn('iam', service_type='client')
 @rate_limited()
-def _get_role_managed_policies(role, client=None, **kwargs):
+def get_role_managed_policies(role, client=None, **kwargs):
     marker = {}
     policies = []
 
