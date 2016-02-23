@@ -116,7 +116,7 @@ def get_role_managed_policies(role, client=None, **kwargs):
 
 @sts_conn('iam', service_type='resource')
 @rate_limited()
-def all_managed_policies(resource=None):
+def all_managed_policies(resource=None, **kwargs):
     managed_policies = {}
 
     for policy in resource.policies.all():
