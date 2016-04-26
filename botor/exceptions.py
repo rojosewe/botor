@@ -8,5 +8,5 @@
 """
 
 
-class BoboException(Exception):
+class BotorException(Exception):
     pass

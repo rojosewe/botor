@@ -5,11 +5,14 @@
     :license: Apache, see LICENSE for more details.
 .. moduleauthor:: Kevin Glisson <kglisson@netflix.com>
 .. moduleauthor:: Patrick Kelley <patrick@netflix.com>
+.. moduleauthor:: Mike Grima <mgrima@netflix.com>
 """
 import functools
 import botocore
 import time
 import boto
+
+RATE_LIMITING_ERRORS = ['Throttling', 'RequestLimitExceeded']
 
 
 def rate_limited(max_attempts=None, max_delay=4):
@@ -41,13 +44,14 @@ def rate_limited(max_attempts=None, max_delay=4):
                     metadata['delay'] = 0
                     return retval
                 except botocore.exceptions.ClientError as e:
-                    if not e.response["Error"]["Code"] == "Throttling":
+                    if e.response["Error"]["Code"] not in RATE_LIMITING_ERRORS:
                         raise e
                     increase_delay(e)
                 except boto.exception.BotoServerError as e:
-                    if not e.error_code == 'Throttling':
+                    if e.error_code not in RATE_LIMITING_ERRORS:
                         raise e
                     increase_delay(e)
 
         return decorated_function
+
     return decorator

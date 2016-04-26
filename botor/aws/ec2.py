@@ -7,7 +7,7 @@
 .. moduleauthor:: Patrick Kelley <patrick@netflix.com>
 """
 from botor.aws.sts import sts_conn
-from botor.exceptions import BoboException
+from botor.exceptions import BotorException
 from botor.decorators import rate_limited
 
 
@@ -50,7 +50,7 @@ def delete_group(group, account_number=None, region=None, assume_role=None, clie
 def authorize_rule(rule, group, account_number=None, region=None, assume_role=None, client=None):
     if rule.direction == 'egress':
         # response = client.authorize_security_group_egress()
-        raise BoboException("Modifying egress rules is not yet supported by Grouper")
+        raise BotorException("Modifying egress rules is not yet supported by Grouper")
     else:
         if rule.cidr:
             client.authorize_security_group_ingress(
@@ -76,7 +76,7 @@ def authorize_rule(rule, group, account_number=None, region=None, assume_role=No
 def revoke_rule(rule, group, account_number=None, region=None, assume_role=None, client=None):
     if rule.direction == 'egress':
         # response = client.authorize_security_group_egress()
-        raise BoboException("Modifying egress rules is not yet supported by Grouper")
+        raise BotorException("Modifying egress rules is not yet supported by Grouper")
     else:
         client.revoke_security_group_ingress(
                 GroupId=group.aws_group_id,
