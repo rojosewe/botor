@@ -58,6 +58,10 @@ def sts_conn(service, service_type='client', future_expiration_minutes=15):
                         + datetime.timedelta(minutes=future_expiration_minutes)
                     if exp > now:
                         kwargs[service_type] = val
+                        kwargs.pop('account_number', None)
+                        kwargs.pop('assume_role', None)
+                        kwargs.pop('session_name', None)
+                        kwargs.pop('region', None)
                         return f(*args, **kwargs)
                     else:
                         del CACHE[key]
