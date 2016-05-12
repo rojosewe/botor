@@ -27,7 +27,7 @@ def list_resource_record_sets(**kwargs):
     client = kwargs.pop('client')
     paginator = client.get_paginator('list_resource_record_sets')
     resource_record_sets = []
-    for resource_record_set in paginator.paginate(HostedZoneId=kwargs.pop('id')):
+    for resource_record_set in paginator.paginate(HostedZoneId=kwargs.pop('Id')):
         resource_record_sets.extend(resource_record_set['ResourceRecordSets'])
     return resource_record_sets
 
