@@ -14,7 +14,7 @@ from botor.aws.sts import boto3_cached_conn
 from botor import Botor
 
 
-def iter_account_region(service, accounts=None, regions=None, role_name=None, session_name='botor', conn_type='botor'):
+def iter_account_region(service, service_type='client', accounts=None, regions=None, assume_role=None, session_name='botor', conn_type='botor'):
     def decorator(func):
         @functools.wraps(func)
         def decorated_function(*args, **kwargs):
@@ -25,7 +25,8 @@ def iter_account_region(service, accounts=None, regions=None, role_name=None, se
                     'account_number': account,
                     'region': region,
                     'session_name': session_name,
-                    'assume_role': role_name
+                    'assume_role': assume_role,
+                    'service_type': service_type
                 }
                 if conn_type == 'botor':
                     kwargs['botor'] = Botor(**conn_dict)
