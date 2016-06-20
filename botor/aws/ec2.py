@@ -8,7 +8,7 @@
 """
 from botor.aws.sts import sts_conn
 from botor.exceptions import BotorException
-from botor.decorators import rate_limited
+from botor.aws.decorators import rate_limited
 
 
 @sts_conn('ec2')
