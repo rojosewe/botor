@@ -7,7 +7,7 @@
 .. moduleauthor:: Patrick Kelley <patrick@netflix.com>
 """
 from botor.aws.sts import sts_conn
-from botor.decorators import rate_limited
+from botor.aws.decorators import rate_limited
 
 
 @sts_conn('autoscaling')

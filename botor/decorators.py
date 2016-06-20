@@ -1,5 +1,5 @@
 """
-.. module: bobo.exceptions
+.. module: botor.decorators
     :platform: Unix
     :copyright: (c) 2015 by Netflix Inc., see AUTHORS for more
     :license: Apache, see LICENSE for more details.
@@ -8,50 +8,40 @@
 .. moduleauthor:: Mike Grima <mgrima@netflix.com>
 """
 import functools
-import botocore
-import time
-import boto
+from itertools import product
+from botor.aws.sts import boto3_cached_conn
 
-RATE_LIMITING_ERRORS = ['Throttling', 'RequestLimitExceeded']
+from botor import Botor
 
 
-def rate_limited(max_attempts=None, max_delay=4):
-    def decorator(f):
-        metadata = {
-            'count': 0,
-            'delay': 0
-        }
-
-        @functools.wraps(f)
+def iter_account_region(service, service_type='client', accounts=None, regions=None, assume_role=None, session_name='botor', conn_type='botor'):
+    def decorator(func):
+        @functools.wraps(func)
         def decorated_function(*args, **kwargs):
+            threads = []
+            for account, region in product(accounts, regions):
+                conn_dict = {
+                    'tech': service,
+                    'account_number': account,
+                    'region': region,
+                    'session_name': session_name,
+                    'assume_role': assume_role,
+                    'service_type': service_type
+                }
+                if conn_type == 'botor':
+                    kwargs['botor'] = Botor(**conn_dict)
+                elif conn_type == 'dict':
+                    kwargs['conn_dict'] = conn_dict
+                elif conn_type == 'boto3':
+                    del conn_dict['tech']
+                    kwargs['conn'] = boto3_cached_conn(service, **conn_dict)
+                result = func(*args, **kwargs)
+                if result:
+                    threads.append(result)
 
-            def increase_delay(e):
-                if metadata['delay'] == 0:
-                    metadata['delay'] = 1
-                elif metadata['delay'] < max_delay:
-                    metadata['delay'] *= 2
-
-                if max_attempts and metadata['count'] > max_attempts:
-                    raise e
-
-            metadata['count'] = 0
-            while True:
-                metadata['count'] += 1
-                if metadata['delay'] > 0:
-                    time.sleep(metadata['delay'])
-                try:
-                    retval = f(*args, **kwargs)
-                    metadata['delay'] = 0
-                    return retval
-                except botocore.exceptions.ClientError as e:
-                    if e.response["Error"]["Code"] not in RATE_LIMITING_ERRORS:
-                        raise e
-                    increase_delay(e)
-                except boto.exception.BotoServerError as e:
-                    if e.error_code not in RATE_LIMITING_ERRORS:
-                        raise e
-                    increase_delay(e)
-
+            result = []
+            for thread in threads:
+                result.append(thread)
+            return result
         return decorated_function
-
     return decorator
