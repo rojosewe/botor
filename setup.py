@@ -24,8 +24,8 @@ with open(os.path.join(ROOT, "botor", "__about__.py")) as f:
     exec(f.read(), about)
 
 install_requires = [
-    'boto3>=1.2.3',
-    'boto>=2.39.0',
+    'boto3>=1.3.1',
+    'boto>=2.41.0',
     'joblib>=0.9.4'
 ]
 
